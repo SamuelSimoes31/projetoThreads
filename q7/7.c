@@ -1,17 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#define CNT 1000000
+#define Q_THREADS 16
 
 int* M[4];
+int npixels, nthreads = Q_THREADS;
 
 void *toGrey(void *thread_id) {
-    int* id = (void*) thread_id;
+    int id = *((int*) thread_id);
+    int i;
+    float r;
 
-    float r = M[0][*id]*0.3 + M[1][*id]*0.59 + M[2][*id]*0.11; //C =  R*0.30 + G*0.59 + B*0.11
-    M[3][*id] = (int) r;
+    for(i = id; i<npixels; i+= nthreads){
 
-    // printf("%d = %d*0.3 + %d*0.59 + %d*0.11\n", M[3][*id], M[0][*id], M[1][*id], M[2][*id]);
+        r = M[0][i]*0.3 + M[1][i]*0.59 + M[2][i]*0.11; //C =  R*0.30 + G*0.59 + B*0.11
+        M[3][i] = (int) r;
+
+        // printf("T%d->%d : %d = %d*0.3 + %d*0.59 + %d*0.11\n", id, i, M[3][i], M[0][i], M[1][i], M[2][i]);
+    }
   
     pthread_exit(thread_id);
 } 
@@ -41,16 +47,19 @@ int main(int argc, char *argv[]) {
     // fscanf(in, "%s", palette);
     fscanf(in, "%d %d %d", &x, &y, &maxcollor);
     
+    npixels = x*y;
+    if(npixels < nthreads)
+        nthreads = npixels;
     
-    threads = malloc(x*y * sizeof(pthread_t));
+    threads = malloc(nthreads * sizeof(pthread_t));
     for(i = 0; i<4; i++) 
-        M[i] = malloc(x*y * sizeof(int));
+        M[i] = malloc(npixels * sizeof(int));
 
     // printf("Digite a matriz de pixels: \n");
-    for(i = 0; i< x*y; i++) 
+    for(i = 0; i < npixels; i++) 
         fscanf(in, "%d %d %d", &M[0][i], &M[1][i], &M[2][i]);
 
-    for(i = 0; i < x*y; i++) {
+    for(i = 0; i < nthreads; i++) {
         int* id = malloc(sizeof(int));
         *id = i;
 
@@ -60,8 +69,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-
-    for(i = 0; i < x*y; i++){
+    for(i = 0; i < nthreads; i++){
         void* id;
 
         pthread_join(threads[i], &id);
