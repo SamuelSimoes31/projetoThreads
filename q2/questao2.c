@@ -8,10 +8,36 @@ pthread_mutex_t *mutex_lines = NULL;
 pthread_mutex_t mutex_open_file = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_print = PTHREAD_MUTEX_INITIALIZER;
 
+void *threadFunc(void *threadid){
+    FILE *file = NULL;
+    char file_name[7]={0};
+
+    pthread_mutex_lock(&mutex_open_file);
+    while(open_file < n_files){
+        sprintf(file_name,"%d.txt",open_file);
+        file = fopen(file_name,"r");
+        if(file==NULL){
+            printf("Erro ao abrir arquivo %s\n",file_name);
+            pthread_mutex_unlock(&mutex_open_file);
+            pthread_exit(NULL);
+        }
+        open_file++;
+        pthread_mutex_unlock(&mutex_open_file);
+        
+        /*MODIFICA LINHAS*/
+
+        fclose(file);
+        file = NULL;
+        pthread_mutex_lock(&mutex_open_file);
+    }
+    pthread_mutex_unlock(&mutex_open_file);
+    pthread_exit(NULL);
+}
+
 int main(void) {
     int i;
-    printf("\e[2J");
-    printf("\e[1;1H");
+    printf("\e[2J");    //limpa tela
+    printf("\e[1;1H");  //seta cursor pra posição 1 1
     printf("Número de arquivos:");
     scanf("%d",&n_files);
     printf("Número de linhas:");
