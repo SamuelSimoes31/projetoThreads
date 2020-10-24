@@ -8,7 +8,7 @@ pthread_mutex_t *mutex_lines = NULL;
 pthread_mutex_t mutex_open_file = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_print = PTHREAD_MUTEX_INITIALIZER;
 
-void *threadFunc(void *threadid){
+void *thread_func(){
     FILE *file = NULL;
     char file_name[7]={0};
 
@@ -25,6 +25,9 @@ void *threadFunc(void *threadid){
         pthread_mutex_unlock(&mutex_open_file);
         
         /*MODIFICA LINHAS*/
+        char teste[50];
+        fscanf(file,"%s",teste);
+        printf("%s\n",teste);
 
         fclose(file);
         file = NULL;
@@ -35,7 +38,8 @@ void *threadFunc(void *threadid){
 }
 
 int main(void) {
-    int i;
+    int i,rc;
+    pthread_t *threads = NULL;
     printf("\e[2J");    //limpa tela
     printf("\e[1;1H");  //seta cursor pra posição 1 1
     printf("Número de arquivos:");
@@ -52,10 +56,23 @@ int main(void) {
         lines[i] = (char *)calloc(25,sizeof(char));
         mutex_lines[i] = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
     }
+    threads = (pthread_t *)malloc(n_threads*sizeof(pthread_t));
+    for(i=0;i<n_threads;i++){
+        rc = pthread_create(&threads[i],NULL,thread_func,NULL);
+        if(rc){
+            printf("Erro ao criar thread %d\n",i);
+            break;
+        }
+    }
+
+    if(!rc){
+        for(i=0;i<n_threads;i++) pthread_join(threads[i], NULL);
+    }
 
     //FREE
     free(mutex_lines);
     for(i=0;i<n_lines;i++) free(lines[i]);
     free(lines);
+    free(threads);
     return 0;
 }
