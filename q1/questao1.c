@@ -40,9 +40,9 @@ int main(void) {
         printf("No main: criando thread %d\n", t);      
         rc = pthread_create(&threads[t], NULL, threadFunc, (void *) taskids[t]);      
         if (rc){
-            for(i=0;i<=t;i++) free(taskids[t]);       
+            for(i=0;i<=t;i++) free(taskids[t]);
             printf("ERRO; código de retorno é %d\n", rc);         
-            exit(-1);      
+            exit(-1);
         }
     }
     for(t=0; t<NUM_THREADS; t++) pthread_join(threads[t], NULL);

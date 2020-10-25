@@ -1,0 +1,8 @@
+3
+FFF305 Estocolmo    18:35
+1
+QRS111 Madri        18:45
+3
+DEF321 Berlim       19:00
+2
+GHI456 St. Petsbu.  19:15

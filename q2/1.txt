@@ -1,0 +1,6 @@
+3
+AQT123 Istambul     17:45
+1
+XYZ001 Nice         17:50
+2
+ABC789 Moscou       18:20

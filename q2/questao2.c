@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 
 int n_lines, n_files, n_threads, open_file=0;
 char **lines = NULL;
 pthread_mutex_t *mutex_lines = NULL;
 pthread_mutex_t mutex_open_file = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_print = PTHREAD_MUTEX_INITIALIZER;
+
+void print_line(int line, char *str){
+    
+}
 
 void *thread_func(){
     FILE *file = NULL;
@@ -29,10 +34,12 @@ void *thread_func(){
         
         /*MODIFICA LINHAS*/
         while(!feof(file)){
-            printf("---------------\n");
             fscanf(file,"%d",&line);
             fscanf(file," %[^\n]",string);
-            printf("[%d]\n%s\n",line,string);
+            pthread_mutex_lock(&mutex_lines[line-1]);
+            sleep(2);
+            printf("[%d]%s\n",line,string);
+            pthread_mutex_unlock(&mutex_lines[line-1]);
         }
         
 
