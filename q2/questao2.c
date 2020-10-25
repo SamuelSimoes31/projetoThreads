@@ -10,11 +10,16 @@ pthread_mutex_t *mutex_lines = NULL;
 pthread_mutex_t mutex_open_file = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_print = PTHREAD_MUTEX_INITIALIZER;
 
-void print_line(int line, char *str, int len){
-    
+void print_line(int line, char str[26], int len){
+    int i=len;
+    // pthread_mutex_lock(&mutex_print);
     printf("\e[%d;1H",line);
-    printf("%s \n",str);
-    
+    printf("%s",str);
+    while (i++ < 20){
+        putchar(' ');
+    }
+    printf("%s\n",str+len+1);
+    // pthread_mutex_unlock(&mutex_print);
 }
 
 void *thread_func(){
@@ -23,6 +28,7 @@ void *thread_func(){
 
     int line,len;
     char string[26];
+    int arq;
 
     pthread_mutex_lock(&mutex_open_file);
     while(open_file < n_files){
@@ -33,6 +39,7 @@ void *thread_func(){
             pthread_mutex_unlock(&mutex_open_file);
             pthread_exit(NULL);
         }
+        arq = open_file;
         open_file++;
         pthread_mutex_unlock(&mutex_open_file);
         
@@ -40,13 +47,15 @@ void *thread_func(){
         while(!feof(file)){
             fscanf(file,"%d",&line);
             pthread_mutex_lock(&mutex_lines[line-1]);
+
             fscanf(file," %[^\n]",string);
-            len = strlen(string) -5;
+            len = strlen(string)-6;
             string[len] = 0;
             pthread_mutex_lock(&mutex_print);
             print_line(line,string,len);
             pthread_mutex_unlock(&mutex_print);
-            sleep(2);
+            sleep(1);
+
             pthread_mutex_unlock(&mutex_lines[line-1]);
         }
         
@@ -93,6 +102,8 @@ int main(void) {
         for(i=0;i<n_threads;i++) pthread_join(threads[i], NULL);
     }
 
+    printf("\e[H"); //seta cursor pra posição inicial
+    printf("\e[J"); //limpa tudo a partir do cursor
     printf("\e[?25h"); //exibe o cursor
 
     //FREE
