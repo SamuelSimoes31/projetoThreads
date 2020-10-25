@@ -12,6 +12,9 @@ void *thread_func(){
     FILE *file = NULL;
     char file_name[7]={0};
 
+    int line;
+    char string[70];
+
     pthread_mutex_lock(&mutex_open_file);
     while(open_file < n_files){
         sprintf(file_name,"%d.txt",open_file);
@@ -25,9 +28,13 @@ void *thread_func(){
         pthread_mutex_unlock(&mutex_open_file);
         
         /*MODIFICA LINHAS*/
-        char teste[50];
-        fscanf(file,"%s",teste);
-        printf("%s\n",teste);
+        while(!feof(file)){
+            printf("---------------\n");
+            fscanf(file,"%d",&line);
+            fscanf(file," %[^\n]",string);
+            printf("[%d]\n%s\n",line,string);
+        }
+        
 
         fclose(file);
         file = NULL;
@@ -40,14 +47,16 @@ void *thread_func(){
 int main(void) {
     int i,rc;
     pthread_t *threads = NULL;
-    printf("\e[2J");    //limpa tela
-    printf("\e[1;1H");  //seta cursor pra posição 1 1
+    printf("\e[H"); //seta cursor pra posição inicial
+    printf("\e[J"); //limpa tudo a partir do cursor
     printf("Número de arquivos:");
     scanf("%d",&n_files);
     printf("Número de linhas:");
     scanf("%d",&n_lines);
     printf("Número de número de threads:");
     scanf("%d",&n_threads);
+    printf("\e[H"); //seta cursor pra posição inicial
+    printf("\e[J"); //limpa tudo a partir do cursor
 
     //ALOCAÇÕES
     mutex_lines = (pthread_mutex_t *)malloc(n_lines*sizeof(pthread_mutex_t));
