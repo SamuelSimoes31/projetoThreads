@@ -5,21 +5,21 @@
 #include <string.h>
 
 int n_lines, n_files, n_threads, open_file=0;
-char **lines = NULL;
 pthread_mutex_t *mutex_lines = NULL;
 pthread_mutex_t mutex_open_file = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_print = PTHREAD_MUTEX_INITIALIZER;
 
 void print_line(int line, char str[26], int len){
     int i=len;
-    // pthread_mutex_lock(&mutex_print);
+    pthread_mutex_lock(&mutex_print);
     printf("\e[%d;1H",line);
     printf("%s",str);
     while (i++ < 20){
         putchar(' ');
     }
-    printf("%s\n",str+len+1);
-    // pthread_mutex_unlock(&mutex_print);
+    printf("%s",str+len+1);
+    fflush(stdout);
+    pthread_mutex_unlock(&mutex_print);
 }
 
 void *thread_func(){
@@ -28,7 +28,6 @@ void *thread_func(){
 
     int line,len;
     char string[26];
-    int arq;
 
     pthread_mutex_lock(&mutex_open_file);
     while(open_file < n_files){
@@ -39,7 +38,6 @@ void *thread_func(){
             pthread_mutex_unlock(&mutex_open_file);
             pthread_exit(NULL);
         }
-        arq = open_file;
         open_file++;
         pthread_mutex_unlock(&mutex_open_file);
         
@@ -51,10 +49,8 @@ void *thread_func(){
             fscanf(file," %[^\n]",string);
             len = strlen(string)-6;
             string[len] = 0;
-            pthread_mutex_lock(&mutex_print);
             print_line(line,string,len);
-            pthread_mutex_unlock(&mutex_print);
-            sleep(1);
+            sleep(2);
 
             pthread_mutex_unlock(&mutex_lines[line-1]);
         }
@@ -79,16 +75,15 @@ int main(void) {
     scanf("%d",&n_lines);
     printf("Número de número de threads:");
     scanf("%d",&n_threads);
+    // fflush(stdin);
     printf("\e[H"); //seta cursor pra posição inicial
     printf("\e[J"); //limpa tudo a partir do cursor
     printf("\e[?25l"); //esconde o cursor
+
     //ALOCAÇÕES
     mutex_lines = (pthread_mutex_t *)malloc(n_lines*sizeof(pthread_mutex_t));
-    lines = (char **)malloc(n_lines*sizeof(char *));
-    for(i=0;i<n_lines;i++){
-        lines[i] = (char *)calloc(26,sizeof(char));
-        mutex_lines[i] = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-    }
+    for(i=0;i<n_lines;i++) pthread_mutex_init(&mutex_lines[i],NULL);
+
     threads = (pthread_t *)malloc(n_threads*sizeof(pthread_t));
     for(i=0;i<n_threads;i++){
         rc = pthread_create(&threads[i],NULL,thread_func,NULL);
@@ -108,8 +103,6 @@ int main(void) {
 
     //FREE
     free(mutex_lines);
-    for(i=0;i<n_lines;i++) free(lines[i]);
-    free(lines);
     free(threads);
     return 0;
 }
