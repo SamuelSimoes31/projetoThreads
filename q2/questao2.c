@@ -17,9 +17,9 @@ void set_line_color(int line){
             case 1: {printf("\e[48;2;255;0;0m");break;}     //texto vermelho
             case 2: {printf("\e[48;2;255;255;0m");break;}   //texto amarelo
             case 3: {printf("\e[48;2;0;0;255m");break;}     //texto azul
-            case 4: {printf("\e[48;2;255;0;255");break;}    //texto magenta
-            case 5: {printf("\e[48;2;0;255;0");break;}      //texto verde
-            case 7: {printf("\e[48;2;0;255;255");break;}    //texto ciano
+            case 4: {printf("\e[48;2;255;0;255m");break;}    //texto magenta
+            case 5: {printf("\e[48;2;0;255;0m");break;}      //texto verde
+            case 7: {printf("\e[48;2;0;255;255m");break;}    //texto ciano
         }
     } else {
         printf("\e[38;2;255;255;255m"); //seta cor do texto para branco
