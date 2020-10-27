@@ -7,3 +7,4 @@
 # exclua os arquivos com essas extensões
 !*.c
 !*.txt
+!*.ppm
