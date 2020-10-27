@@ -49,17 +49,17 @@ void clean_screen(int show_cursor){
 
 void *thread_func(){
     FILE *file = NULL;
-    char file_name[7]={0};
+    char file_path[13]={0};
 
     int line,len;
     char string[26];
 
     pthread_mutex_lock(&mutex_open_file);
     while(open_file < n_files){
-        sprintf(file_name,"%d.txt",open_file);
-        file = fopen(file_name,"r");
+        sprintf(file_path,"files/%d.txt",open_file);
+        file = fopen(file_path,"r");
         if(file==NULL){
-            printf("Erro ao abrir arquivo %s\n",file_name);
+            printf("Erro ao abrir arquivo %s\n",file_path);
             pthread_mutex_unlock(&mutex_open_file);
             pthread_exit(NULL);
         }
@@ -68,7 +68,7 @@ void *thread_func(){
         
         /*MODIFICA LINHAS*/
         while(!feof(file)){
-            fscanf(file,"%d",&line);
+            fscanf(file," %d",&line);
             pthread_mutex_lock(&mutex_lines[line-1]);
 
             fscanf(file," %[^\n]",string);
