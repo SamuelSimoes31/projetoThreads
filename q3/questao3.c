@@ -3,15 +3,25 @@
 #include <pthread.h>
 #include <string.h>
 
-void *contar_substring(int *id){
-    printf("[%d]\n",*id);
-    pthread_exit((void *)id);
+typedef struct{
+    int base;
+    int limite;
+    char *palheiro;
+    char *agulha;
+}StrPointers;
+
+
+void *contar_substring(StrPointers *strp){
+    int ret=0;
+    printf("base:%d limite:%d palheiro:%s agulha:%s\n",strp->base,strp->limite,strp->palheiro,strp->agulha);
+    pthread_exit((void *)&ret);
 }
 
 int quantidade_substring(char *s1, char *s2){
-    int n1,n2,p=1,i;
-    int *ids=NULL,*res;
-    pthread_t * threads=NULL;
+    int n1,n2,p=1,i,ret=0;
+    StrPointers *strp=NULL;
+    int *res=NULL;
+    pthread_t *threads=NULL;
 
     n1 = strlen(s1);
     n2 = strlen(s2);
@@ -19,34 +29,39 @@ int quantidade_substring(char *s1, char *s2){
         if(n1%i==0) p = i;
     }
     printf("p=%d\n",p);
-    ids = (int *)malloc(p*sizeof(int));
-    if(ids==NULL){
-        printf("Falha ao alocar ids");
+    
+    strp = (StrPointers *)malloc(p*sizeof(StrPointers));
+    if(strp==NULL){
+        printf("Falha ao alocar strings");
         exit(3);
     }
+
     threads = (pthread_t *)malloc(p*sizeof(pthread_t));
     if(threads==NULL){
         printf("Falha ao alocar threads");
-        free(ids);
+        free(strp);
         exit(3);
     }
 
     for(i=0;i<p;i++){
-        ids[i]=i;
-        pthread_create(&threads[i],NULL,(void *)contar_substring,&ids[i]);
+        strp[i].palheiro = s1;
+        strp[i].agulha = s2;
+        strp[i].base = i*(n1/p);
+        strp[i].limite = strp[i].base + (n1/p);
+        pthread_create(&threads[i],NULL,(void *)contar_substring,&strp[i]);
     }
 
     for(i=0;i<p;i++){
         pthread_join(threads[i],(void **)&res);
-        printf("%d\n",*res);
+        ret += *res;
     }
 
-    free(ids);
+    free(strp);
     free(threads);
-    return *res;
+    return ret;
 }
 
 int main(void) {
-    quantidade_substring("abcdab","ab");
+    printf("%d",quantidade_substring("abcdab","ab"));
     return 0;
 }
