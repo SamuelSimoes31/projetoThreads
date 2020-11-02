@@ -11,10 +11,19 @@ typedef struct{
 }StrPointers;
 
 
-void *contar_substring(StrPointers *strp){
-    int ret=0;
-    printf("base:%d limite:%d palheiro:%s agulha:%s\n",strp->base,strp->limite,strp->palheiro,strp->agulha);
-    pthread_exit((void *)&ret);
+void *contar_substring(StrPointers *ptr){
+    int ret=0,i,pos=0,len=strlen(ptr->agulha);
+    for(i=ptr->base; i<ptr->limite; i++){
+        if(ptr->palheiro[i] == ptr->agulha[pos]){
+            pos++;
+            if(pos==len) {
+                ret++;
+                pos = 0;
+            }
+        }
+    }
+    ptr->base = ret;
+    pthread_exit((void *)&ptr->base);
 }
 
 int quantidade_substring(char *s1, char *s2){
@@ -53,6 +62,7 @@ int quantidade_substring(char *s1, char *s2){
 
     for(i=0;i<p;i++){
         pthread_join(threads[i],(void **)&res);
+        printf("res: %d\n",*res);
         ret += *res;
     }
 
