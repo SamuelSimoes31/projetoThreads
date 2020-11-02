@@ -10,7 +10,7 @@ typedef struct{
     char *agulha;
 }StrPointers;
 
-int qtd = 0;
+int qtd = 0,n_threads=1;
 pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *contar_substring(StrPointers *ptr){
@@ -38,10 +38,7 @@ int quantidade_substring(char *s1, char *s2){
 
     n1 = strlen(s1);
     n2 = strlen(s2);
-    for(i=2;i*n2<n1;i++){
-        if(n1%i==0) p = i;
-    }
-    printf("p=%d\n",p);
+    p = n_threads;
     
     strp = (StrPointers *)malloc(p*sizeof(StrPointers));
     if(strp==NULL){
@@ -85,6 +82,11 @@ int main(void) {
 
     n1 = strlen(s1);
     n2 = strlen(s2);
+    printf("tamanho da string: %d\n",n1);
+    printf("tamanho da substring: %d\n",n2);
+    
+    printf("POSSIBILIDADES DE NÚMERO DE THREADS:\n");
+
     for(i=1;i*n2<=n1;i++){
         if(n1%i==0) {
             p = i;
@@ -97,12 +99,12 @@ int main(void) {
             putchar('\n');
         }
     }
+    printf("quantas threads você quer? ");
+    scanf(" %d",&n_threads);
+    
+    printf("%d\n",quantidade_substring(s1,s2));
+    printf("qtd=%d\n",qtd);
+    qtd=0;
 
-    // printf("%d\n",quantidade_substring("abcdab","ab"));
-    // printf("qtd=%d\n",qtd);
-    // qtd=0;
-    // printf("%d\n",quantidade_substring("aaa","a"));
-    // printf("qtd=%d\n",qtd);
-    // qtd=0;
     return 0;
 }
