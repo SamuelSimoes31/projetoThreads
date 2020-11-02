@@ -10,19 +10,23 @@ typedef struct{
     char *agulha;
 }StrPointers;
 
+int qtd = 0;
+pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *contar_substring(StrPointers *ptr){
-    int ret=0,i,pos=0,len=strlen(ptr->agulha);
+    int i,j,ret=0,len=strlen(ptr->agulha);
     for(i=ptr->base; i<ptr->limite; i++){
-        if(ptr->palheiro[i] == ptr->agulha[pos]){
-            pos++;
-            if(pos==len) {
-                ret++;
-                pos = 0;
+        if(ptr->palheiro[i] == ptr->agulha[0] && i+len-1 < ptr->limite){
+            for(j=1;j<len;j++){
+                if(ptr->palheiro[j] != ptr->agulha[j]) break;
+                else if(j == len-1) ret++;
             }
         }
     }
     ptr->base = ret;
+    pthread_mutex_lock(&mymutex);
+    qtd +=ret;
+    pthread_mutex_unlock(&mymutex);
     pthread_exit((void *)&ptr->base);
 }
 
@@ -73,5 +77,6 @@ int quantidade_substring(char *s1, char *s2){
 
 int main(void) {
     printf("%d",quantidade_substring("abcdab","ab"));
+    printf("qtd=%d",qtd);
     return 0;
 }
