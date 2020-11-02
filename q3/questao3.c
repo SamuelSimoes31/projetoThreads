@@ -17,7 +17,7 @@ void *contar_substring(StrPointers *ptr){
     int i,j,ret=0,len=strlen(ptr->agulha);
     for(i=ptr->base; i<ptr->limite; i++){
         if(ptr->palheiro[i] == ptr->agulha[0] && i+len-1 < ptr->limite){
-            for(j=1;j<len;j++){
+            for(j=0;j<len;j++){
                 if(ptr->palheiro[j] != ptr->agulha[j]) break;
                 else if(j == len-1) ret++;
             }
@@ -76,7 +76,11 @@ int quantidade_substring(char *s1, char *s2){
 }
 
 int main(void) {
-    printf("%d",quantidade_substring("abcdab","ab"));
-    printf("qtd=%d",qtd);
+    printf("%d\n",quantidade_substring("abcdab","ab"));
+    printf("qtd=%d\n",qtd);
+    qtd=0;
+    printf("%d\n",quantidade_substring("aaa","a"));
+    printf("qtd=%d\n",qtd);
+    qtd=0;
     return 0;
 }
