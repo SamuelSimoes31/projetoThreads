@@ -76,11 +76,33 @@ int quantidade_substring(char *s1, char *s2){
 }
 
 int main(void) {
-    printf("%d\n",quantidade_substring("abcdab","ab"));
-    printf("qtd=%d\n",qtd);
-    qtd=0;
-    printf("%d\n",quantidade_substring("aaa","a"));
-    printf("qtd=%d\n",qtd);
-    qtd=0;
+    char s1[100],s2[100];
+    int n1,n2,p=1,i,j,tam;
+    printf("Digite a string: ");
+    scanf(" %[^\n]",s1);
+    printf("Digite a substring: ");
+    scanf(" %[^\n]",s2);
+
+    n1 = strlen(s1);
+    n2 = strlen(s2);
+    for(i=1;i*n2<=n1;i++){
+        if(n1%i==0) {
+            p = i;
+            printf("%d threads: ",p);
+            tam = n1/p;
+            for(j=0;j<n1;j++){
+                putchar(s1[j]);
+                if((j+1)%tam==0) printf(" | ");
+            }
+            putchar('\n');
+        }
+    }
+
+    // printf("%d\n",quantidade_substring("abcdab","ab"));
+    // printf("qtd=%d\n",qtd);
+    // qtd=0;
+    // printf("%d\n",quantidade_substring("aaa","a"));
+    // printf("qtd=%d\n",qtd);
+    // qtd=0;
     return 0;
 }
