@@ -43,8 +43,8 @@ int main(int argc, char *argv[]) {
 
 
     // printf("Digite as dimensões x, y e o valor máximo: \n");
-    // char *palette = malloc(10*sizeof(char));
-    // fscanf(in, "%s", palette);
+    char *palette = malloc(10*sizeof(char));
+    fscanf(in, "%s", palette);
     fscanf(in, "%d %d %d", &x, &y, &maxcollor);
     
     npixels = x*y;
@@ -79,8 +79,8 @@ int main(int argc, char *argv[]) {
     }
     
     // printf("\n");
-    // fprintf(out, "%s\n%d %d\n%d\n", palette, x, y, maxcollor);
-    fprintf(out, "%d %d\n%d\n", x, y, maxcollor);
+    fprintf(out, "%s\n%d %d\n%d\n", palette, x, y, maxcollor);
+    // fprintf(out, "%d %d\n%d\n", x, y, maxcollor);
 
     for(i = 0; i < y; i++){
       
