@@ -87,7 +87,7 @@ int main(void) {
     
     printf("POSSIBILIDADES DE NÚMERO DE THREADS:\n");
 
-    for(i=1;i*n2<=n1;i++){
+    for(i=1;i*n2<n1;i++){
         if(n1%i==0) {
             p = i;
             printf("%d threads: ",p);
@@ -101,8 +101,9 @@ int main(void) {
     }
     printf("quantas threads você quer? ");
     scanf(" %d",&n_threads);
-    
-    printf("%d\n",quantidade_substring(s1,s2));
+
+    int qtd_ret = quantidade_substring(s1,s2);
+    // printf("%d\n",qtd_ret);
     printf("qtd=%d\n",qtd);
     qtd=0;
 
