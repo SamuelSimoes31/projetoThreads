@@ -9,7 +9,7 @@ long contador = 0;
 pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *threadFunc(void *threadid){
-    int i;
+    long i;
     for(i=0;i<LIM_CONTADOR;i++){
         pthread_mutex_lock(&mymutex);
         if(contador < LIM_CONTADOR){
@@ -36,7 +36,8 @@ int main(void) {
 
     int t,i,rc;  
     for(t=0; t<NUM_THREADS; t++){      
-        taskids[t] = (int *) malloc(sizeof(int)); *taskids[t] = t;
+        taskids[t] = (int *) malloc(sizeof(int));
+        *taskids[t] = t;
         printf("No main: criando thread %d\n", t);      
         rc = pthread_create(&threads[t], NULL, threadFunc, (void *) taskids[t]);      
         if (rc){
