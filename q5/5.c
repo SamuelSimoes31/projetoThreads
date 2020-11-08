@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#define Q_THREADS 16
+#define Q_THREADS 4
 #define M_SIZE 4
 #define MAX_ITERATIONS 100
 
