@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <time.h>
-// #define Q_THREADS 16
+#define Q_THREADS 16
 #define M_SIZE 4
 #define MAX_ITERATIONS 100
 
-int nthreads, m_size = M_SIZE, max_iterations = MAX_ITERATIONS;
+int nthreads = Q_THREADS, m_size = M_SIZE, max_iterations = MAX_ITERATIONS;
 double MA[M_SIZE][M_SIZE] = {
     {4, 1, 1, 1},
     {1, 4, 1, 1},
@@ -28,12 +27,8 @@ void *jacobiThread(void *args) {
     int id = *(int*)args;
     int i, j, k;
     double sum, nxtMX[M_SIZE];
-    long int dt;
-
-    clock_t t1, t2;
 
     for(k = 0; k<max_iterations; k++){
-        t1 = clock();
 
         for(i = id; i<m_size; i+= nthreads){
             sum = 0;
@@ -52,47 +47,18 @@ void *jacobiThread(void *args) {
             MX[i] = nxtMX[i];
 
         pthread_barrier_wait(&iterationBarrier);
-        dt+= clock() - t1;
-        // printf("%ld\n", clock() - t1);
     }
-
-    printf("dt medio da thread %d é: %ld\n", id, dt/max_iterations);
        
     free((int*)args);
 
     pthread_barrier_wait(&iterationBarrier);
     pthread_exit(NULL);
-} 
-
-// dt medio da thread 1 é: 18446744073709551567
-// 85
-// dt medio da thread 0 é: 18446744073709551569
-// dt medio da thread 1 é: 18446744073709193024
-// 36
-// dt medio da thread 0 é: 18446744073709150579
-
+}
 
 int main(int argc, char *argv[]) {
-
-    FILE *in, *out;
-    pthread_t* threads;
-    int i, j;
-
-    if(argc>1){
-        char* inItr = argv[1];
-        max_iterations = 0;
-
-        for(i = 0; inItr[i]!= '\0'; i++)
-            if(inItr[i]>='0' && inItr[i]<='9'){
-                max_iterations*=10;
-                max_iterations += inItr[i] - '0';
-            }
-
-        if(max_iterations == 0) max_iterations = MAX_ITERATIONS;
-    }
     
-    printf("Digite o nº de threads: ");
-    scanf("%d", &nthreads);
+    pthread_t* threads;
+    int i;
 
     pthread_barrier_init(&iterationBarrier, NULL, nthreads);
 
@@ -101,8 +67,6 @@ int main(int argc, char *argv[]) {
         printf("\n Falha na criação do vetor de threads\n");
         _exit(3);
     }
-
-    // t1 = time(NULL);
 
     for(i = 0; i < nthreads; i++) {
         int* id = malloc(sizeof(int));
@@ -115,9 +79,6 @@ int main(int argc, char *argv[]) {
     }
 
     pthread_join(threads[0], NULL);
-
-    // t2 = time(NULL);
-    // printf("\ndt = %lf\n\n", difftime(t2, t1));
 
     free(threads);
 
