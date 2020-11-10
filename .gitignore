@@ -6,5 +6,6 @@
 
 # exclua os arquivos com essas extensões
 !*.c
+!*.cpp
 !*.txt
 !*.ppm
