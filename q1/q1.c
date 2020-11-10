@@ -14,7 +14,7 @@ void *threadFunc(void *threadid){
         pthread_mutex_lock(&mymutex);
         if(contador < LIM_CONTADOR){
             contador++;
-            printf("t%d -> %ld\n",*(int *)threadid, contador);
+            // printf("t%d -> %ld\n",*(int *)threadid, contador);
             if(contador == LIM_CONTADOR) {
                 printf("t%d: ALCANCEI %d. GANHEI\n",*(int *)threadid,LIM_CONTADOR);
                 break;
@@ -38,7 +38,7 @@ int main(void) {
     for(t=0; t<NUM_THREADS; t++){      
         taskids[t] = (int *) malloc(sizeof(int));
         *taskids[t] = t;
-        printf("No main: criando thread %d\n", t);      
+        // printf("No main: criando thread %d\n", t);      
         rc = pthread_create(&threads[t], NULL, threadFunc, (void *) taskids[t]);      
         if (rc){
             for(i=0;i<=t;i++) free(taskids[t]);
